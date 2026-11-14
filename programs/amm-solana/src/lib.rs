@@ -9,17 +9,30 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("5oHQR47iUKFWJxSFCjJSpqArk7HQdoVpgrQNXSVmFTy");
+declare_id!("6KoUjko5kqLHaF31gdWGBihf8Pw8dUNte2hBpBEJveVe");
 
 #[program]
-pub mod amm_solana {
+pub mod amm_video {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        crate::instructions::initialize::handle_initialize(ctx)
+    pub fn initialize(
+        ctx: Context<Initialize>,
+        seed: u64,
+        fee: u16,
+        authority: Option<Pubkey>,
+    ) -> Result<()> {
+        ctx.accounts.init(seed, fee, authority, ctx.bumps)
     }
 
-    pub fn increment(ctx: Context<Increment>) -> Result<()> {
-        crate::instructions::increment::handle_increment(ctx)
+    pub fn deposit(ctx: Context<Deposit>, amount: u64, max_x: u64, max_y: u64) -> Result<()> {
+        ctx.accounts.deposit(amount, max_x, max_y)
+    }
+
+    pub fn withdraw(ctx: Context<Withdraw>, amount: u64, min_x: u64, min_y: u64) -> Result<()> {
+        ctx.accounts.withdraw(amount, min_x, min_y)
+    }
+
+    pub fn swap(ctx: Context<Swap>, is_x: bool, amount_in: u64, min_amount_out: u64) -> Result<()> {
+        ctx.accounts.swap(is_x, amount_in, min_amount_out)
     }
 }
