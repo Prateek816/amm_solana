@@ -8,6 +8,7 @@ pub struct Config {
     pub mint_x: Pubkey,            // Token X
     pub mint_y: Pubkey,            // Token Y
     pub fee: u16,                  // Swap fee in basis points
+    pub protocol_fee: u16,          // Protocol's share in basis points
     pub locked: bool,              // If the pool is locked
     pub config_bump: u8,           // Bump seed for the config account
     pub lp_bump: u8,               // Bump seed for the LP token

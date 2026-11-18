@@ -48,6 +48,19 @@ pub struct Swap<'info> {
         associated_token::mint = mint_y,
         associated_token::authority = user,
     )]
+    #[account(
+        mut,
+        associated_token::mint = mint_x,
+        associated_token::authority = config,
+    )]
+    pub treasury_x: Box<Account<'info, TokenAccount>>,
+
+    #[account(
+        mut,
+        associated_token::mint = mint_y,
+        associated_token::authority = config,
+    )]
+    pub treasury_y: Box<Account<'info, TokenAccount>>,
     pub user_y: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,

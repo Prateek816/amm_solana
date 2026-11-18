@@ -39,6 +39,21 @@ pub struct Initialize<'info> {
     #[account(
         init,
         payer = initializer,
+        associated_token::mint = mint_x,
+        associated_token::authority = config,
+    )]
+    pub treasury_x: Account<'info, TokenAccount>,
+
+    #[account(
+        init,
+        payer = initializer,
+        associated_token::mint = mint_y,
+        associated_token::authority = config,
+    )]
+    pub treasury_y: Account<'info, TokenAccount>,
+    #[account(
+        init,
+        payer = initializer,
         seeds = [b"config", seed.to_le_bytes().as_ref()],
         bump,
         space = Config::DISCRIMINATOR.len() + Config::INIT_SPACE,
