@@ -1,9 +1,15 @@
+
 use {
     anchor_lang::{
-        solana_program::instruction::Instruction, system_program::ID as SYSTEM_PROGRAM_ID,
-        InstructionData, ToAccountMetas,
+        solana_program::instruction::Instruction,
+        system_program::ID as SYSTEM_PROGRAM_ID,
+        InstructionData,
+        ToAccountMetas,
     },
-    anchor_spl::associated_token::{self, ID as ASSOCIATED_TOKEN_PROGRAM_ID},
+    anchor_spl::associated_token::{
+        self,
+        ID as ASSOCIATED_TOKEN_PROGRAM_ID,
+    },
     litesvm::LiteSVM,
     litesvm_token::spl_token::ID as TOKEN_PROGRAM_ID,
     solana_keypair::Keypair,
@@ -12,7 +18,7 @@ use {
 };
 
 pub fn create_withdraw_ix(
-    mut _svm: &mut LiteSVM,
+    _svm: &mut LiteSVM,
     payer: &Keypair,
     mint_x: Pubkey,
     mint_y: Pubkey,
@@ -21,19 +27,40 @@ pub fn create_withdraw_ix(
     vault_x: Pubkey,
     vault_y: Pubkey,
 ) -> Instruction {
+
     let user = payer.pubkey();
-    let user_x = associated_token::get_associated_token_address(&user, &mint_x);
-    let user_y = associated_token::get_associated_token_address(&user, &mint_y);
-    let user_lp = associated_token::get_associated_token_address(&user, &mint_lp);
+
+    // User X account
+    let user_x =
+        associated_token::get_associated_token_address(
+            &user,
+            &mint_x,
+        );
+
+    // User Y account
+    let user_y =
+        associated_token::get_associated_token_address(
+            &user,
+            &mint_y,
+        );
+
+    // User LP account
+    let user_lp =
+        associated_token::get_associated_token_address(
+            &user,
+            &mint_lp,
+        );
 
     Instruction::new_with_bytes(
         amm_video::id(),
+
         &amm_video::instruction::Withdraw {
             amount: 10_000_000,
             min_x: 20_000_000,
             min_y: 20_000_000,
         }
         .data(),
+
         amm_video::accounts::Withdraw {
             user,
             mint_x,

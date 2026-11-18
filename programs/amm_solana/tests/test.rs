@@ -35,6 +35,8 @@ fn setup() -> (
     Pubkey,
     Pubkey,
     Pubkey,
+    Pubkey,
+    Pubkey
 ) {
     let program_id = amm_video::id();
     let payer = Keypair::new();
@@ -64,26 +66,44 @@ fn setup() -> (
     // Derive the PDA for the vault associated token account using the config PDA and Mint A
     let vault_x = associated_token::get_associated_token_address(&config, &mint_x);
     let vault_y = associated_token::get_associated_token_address(&config, &mint_y);
+    let treasure_x = associated_token::get_associated_token_address(&config, &mint_x);
+    let treasure_y = associated_token::get_associated_token_address(&config, &mint_y);
 
     (
-        svm, payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y,
+        svm, payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y,treasure_x,treasure_y
     )
 }
 
 #[test]
 fn test_initialize() {
-    let (mut svm, payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y) = setup();
+    let (mut svm, payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y,_treasure_x,
+_treasure_y) = setup();
 
     let instruction = create_initialise_ix(
         &mut svm, &payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y,
     );
     let res = send(&mut svm, &[instruction], &payer, &[&payer]);
-    assert!(res.is_ok());
+    assert!(
+    res.is_ok(),
+    "Initialize transaction failed: {:#?}",
+    res
+);
 }
 
 #[test]
 pub fn test_deposit() {
-    let (mut svm, payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y) = setup();
+    let (
+    mut svm,
+    payer,
+    mint_x,
+    mint_y,
+    config,
+    mint_lp,
+    vault_x,
+    vault_y,
+    _treasure_x,
+_treasure_y,
+) = setup();
     let init_ix = create_initialise_ix(
         &mut svm, &payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y,
     );
@@ -93,12 +113,27 @@ pub fn test_deposit() {
     );
 
     let res = send(&mut svm, &[init_ix, deposit_ix], &payer, &[&payer]);
-    assert!(res.is_ok());
+    assert!(
+    res.is_ok(),
+    "Initialize transaction failed: {:#?}",
+    res
+);
 }
 
 #[test]
 pub fn test_withdraw() {
-    let (mut svm, payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y) = setup();
+    let (
+    mut svm,
+    payer,
+    mint_x,
+    mint_y,
+    config,
+    mint_lp,
+    vault_x,
+    vault_y,
+    _treasure_x,
+_treasure_y
+) = setup();
     let init_ix = create_initialise_ix(
         &mut svm, &payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y,
     );
@@ -116,12 +151,27 @@ pub fn test_withdraw() {
         &payer,
         &[&payer],
     );
-    assert!(res.is_ok());
+    assert!(
+    res.is_ok(),
+    "Initialize transaction failed: {:#?}",
+    res
+);
 }
 
 #[test]
 pub fn test_swap() {
-    let (mut svm, payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y) = setup();
+    let (
+    mut svm,
+    payer,
+    mint_x,
+    mint_y,
+    config,
+    mint_lp,
+    vault_x,
+    vault_y,
+    _treasure_x,
+_treasure_y
+) = setup();
     let init_ix = create_initialise_ix(
         &mut svm, &payer, mint_x, mint_y, config, mint_lp, vault_x, vault_y,
     );
@@ -135,5 +185,9 @@ pub fn test_swap() {
     );
 
     let res = send(&mut svm, &[init_ix, deposit_ix, swap_ix], &payer, &[&payer]);
-    assert!(res.is_ok());
+    assert!(
+    res.is_ok(),
+    "Initialize transaction failed: {:#?}",
+    res
+);
 }

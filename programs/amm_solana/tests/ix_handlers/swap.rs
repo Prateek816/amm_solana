@@ -1,9 +1,15 @@
+
 use {
     anchor_lang::{
-        solana_program::instruction::Instruction, system_program::ID as SYSTEM_PROGRAM_ID,
-        InstructionData, ToAccountMetas,
+        solana_program::instruction::Instruction,
+        system_program::ID as SYSTEM_PROGRAM_ID,
+        InstructionData,
+        ToAccountMetas,
     },
-    anchor_spl::associated_token::{self, ID as ASSOCIATED_TOKEN_PROGRAM_ID},
+    anchor_spl::associated_token::{
+        self,
+        ID as ASSOCIATED_TOKEN_PROGRAM_ID,
+    },
     litesvm::LiteSVM,
     litesvm_token::spl_token::ID as TOKEN_PROGRAM_ID,
     solana_keypair::Keypair,
@@ -12,7 +18,7 @@ use {
 };
 
 pub fn create_swap_ix(
-    mut _svm: &mut LiteSVM,
+    _svm: &mut LiteSVM,
     payer: &Keypair,
     mint_x: Pubkey,
     mint_y: Pubkey,
@@ -21,18 +27,50 @@ pub fn create_swap_ix(
     vault_x: Pubkey,
     vault_y: Pubkey,
 ) -> Instruction {
+
     let user = payer.pubkey();
-    let user_x = associated_token::get_associated_token_address(&user, &mint_x);
-    let user_y = associated_token::get_associated_token_address(&user, &mint_y);
+
+    // User token accounts
+    let user_x =
+        associated_token::get_associated_token_address(
+            &user,
+            &mint_x,
+        );
+
+    let user_y =
+        associated_token::get_associated_token_address(
+            &user,
+            &mint_y,
+        );
+
+    // Treasury X PDA
+    let (treasury_x, _) = Pubkey::find_program_address(
+        &[
+            b"treasury_x",
+            config.as_ref(),
+        ],
+        &amm_video::id(),
+    );
+
+    // Treasury Y PDA
+    let (treasury_y, _) = Pubkey::find_program_address(
+        &[
+            b"treasury_y",
+            config.as_ref(),
+        ],
+        &amm_video::id(),
+    );
 
     Instruction::new_with_bytes(
         amm_video::id(),
+
         &amm_video::instruction::Swap {
             is_x: true,
             amount_in: 10_000_000,
             min_amount_out: 5_000_000,
         }
         .data(),
+
         amm_video::accounts::Swap {
             user,
             mint_x,
@@ -43,6 +81,8 @@ pub fn create_swap_ix(
             vault_y,
             user_x,
             user_y,
+            treasury_x,
+            treasury_y,
             token_program: TOKEN_PROGRAM_ID,
             associated_token_program: ASSOCIATED_TOKEN_PROGRAM_ID,
             system_program: SYSTEM_PROGRAM_ID,

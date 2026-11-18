@@ -37,20 +37,24 @@ pub struct Initialize<'info> {
     )]
     pub vault_y: Account<'info, TokenAccount>,
     #[account(
-        init,
-        payer = initializer,
-        associated_token::mint = mint_x,
-        associated_token::authority = config,
-    )]
-    pub treasury_x: Account<'info, TokenAccount>,
+    init,
+    payer = initializer,
+    seeds = [b"treasury_x", config.key().as_ref()],
+    bump,
+    token::mint = mint_x,
+    token::authority = config,
+)]
+pub treasury_x: Account<'info, TokenAccount>,
 
-    #[account(
-        init,
-        payer = initializer,
-        associated_token::mint = mint_y,
-        associated_token::authority = config,
-    )]
-    pub treasury_y: Account<'info, TokenAccount>,
+#[account(
+    init,
+    payer = initializer,
+    seeds = [b"treasury_y", config.key().as_ref()],
+    bump,
+    token::mint = mint_y,
+    token::authority = config,
+)]
+pub treasury_y: Account<'info, TokenAccount>,
     #[account(
         init,
         payer = initializer,
